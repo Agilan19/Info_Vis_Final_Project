@@ -1,0 +1,19 @@
+header {
+    margin: 1.5rem;
+    background-color: #324376;
+    color: #b0b0d0;
+    font-family: Garamond;
+}
+
+
+body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+
+svg { 
+    width: 100%; 
+    height: 100%;
+}
