@@ -1,14 +1,26 @@
 
+const width = 800;
+const height = 600;
+const data = "data/city_wards_data.geojson";
+
 window.onload = function () {
 
-  const width = 800;
-  const height = 600;
-
-  let svg = d3.select("#vis").append("svg")
-      .attr("width", width).attr("height", height)
 
 
-  const data = "data/city_wards_data.geojson";
+  svg = d3.select("#vis").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+
+  // Define the div for the tooltip
+  div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+  displayGeoMap();
+
+};
+
+function displayGeoMap() {
 
   d3.json(data, function (err, geojson) {
     console.log(geojson);
@@ -20,11 +32,46 @@ window.onload = function () {
 
     svg.selectAll("path").data(geojson.features).enter().append("path")
       .attr("d", path)
-      .style("fill", "#ffffe8")
-      .style("stroke-width", "1.5")
-      .style("stroke", "black")
-  });
+      .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
+      .on("mouseover", handleMouseOver)
+      .on("mouseout", handleMouseOut);
 
+    // this displays the ward names. Not enough space to fit the names so commenting it out
+    //instead gona use hover and tooltip
 
+    /*     svg.selectAll(".ward-label")
+          .data(geojson.features)
+          .enter().append("text")
+          .attr("class", function (d) { return "ward-label " + d.id; })
+          .attr("transform", function (d) { return "translate(" + path.centroid(d) + ")"; })
+          .attr("dy", ".35em")
+          .text(function (d) { return d.properties.AREA_NAME; }) */
+  })
 
 };
+
+function handleMouseOver(d, i) {
+
+  console.log(d.properties.AREA_NAME);
+
+  d3.select(this).transition()
+    .duration('50')
+    .attr('opacity', '.35');
+
+  div.transition()
+    .duration(200)
+    .style("opacity", .92);
+  div.html(d.properties.AREA_NAME)
+    .style("left", (d3.event.pageX + 10) + "px")
+    .style("top", (d3.event.pageY - 15) + "px");
+}
+
+function handleMouseOut(d, i) {
+  d3.select(this).transition()
+    .duration('50')
+    .attr('opacity', '1');
+
+  div.transition()
+    .duration(500)
+    .style("opacity", 0);
+}
