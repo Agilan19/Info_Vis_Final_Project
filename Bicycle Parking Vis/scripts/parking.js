@@ -1,8 +1,8 @@
 
 window.onload = function () {
 
-  var width = 600;
-  var height = 500;
+  var width = 800;
+  var height = 600;
 
   var svg = d3.select("#vis").append("svg")
       .attr("width", width).attr("height", height)
@@ -20,8 +20,8 @@ window.onload = function () {
 
     svg.selectAll("path").data(json.features).enter().append("path")
       .attr("d", path)
-      .style("fill", "red")
-      .style("stroke-width", "1")
+      .style("fill", "#ffffe8")
+      .style("stroke-width", "2")
       .style("stroke", "black")
   });
 
