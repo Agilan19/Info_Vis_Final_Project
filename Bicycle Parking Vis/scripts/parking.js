@@ -21,7 +21,7 @@ window.onload = function () {
     svg.selectAll("path").data(json.features).enter().append("path")
       .attr("d", path)
       .style("fill", "#ffffe8")
-      .style("stroke-width", "2")
+      .style("stroke-width", "1.5")
       .style("stroke", "black")
   });
 
