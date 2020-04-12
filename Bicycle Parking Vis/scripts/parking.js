@@ -69,14 +69,7 @@ function displayGeoMap(display_variation) {
     // EMPTY VIEW --------------------------------------------------------------------------------------------------//
     d3.json(data, function (err, geojson) {
 
-        let projection = d3.geoMercator().fitSize([width, height], geojson);
-        let path = d3.geoPath().projection(projection);
-  
-        svg.selectAll("path").data(geojson.features).enter().append("path")
-          .attr("d", path)
-          .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
-          .on("mouseover", handleMouseOver)
-          .on("mouseout", handleMouseOut);
+      displayDefaultMap(geojson);
     })
   } else if (display_variation == 1) {
 
@@ -84,21 +77,8 @@ function displayGeoMap(display_variation) {
     d3.json(data, function (err, geojson) {
       d3.json(bike_data, function (err, geojson_bike) {
   
-        let projection = d3.geoMercator().fitSize([width, height], geojson);
-        let path = d3.geoPath().projection(projection);
-  
-        svg.selectAll("path").data(geojson.features).enter().append("path")
-          .attr("d", path)
-          .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
-          .on("mouseover", handleMouseOver)
-          .on("mouseout", handleMouseOut);
-  
-        let bike_projection = d3.geoMercator().fitSize([width, height], geojson_bike);
-        let bike_path = d3.geoPath().projection(bike_projection);
-      
-        svg.selectAll("path").data(geojson_bike.features).enter().append("path")
-          .attr("d", bike_path)
-          .attr("fill", "#ff0000")
+        displayDefaultMap(geojson);
+        displayBikeMapLayer(geojson_bike);
       })
     })
   } else if (display_variation == 2) {
@@ -107,21 +87,8 @@ function displayGeoMap(display_variation) {
     d3.json(data, function (err, geojson) {
       d3.json(park_data, function (err, geojson_parks) {
 
-        let projection = d3.geoMercator().fitSize([width, height], geojson);
-        let path = d3.geoPath().projection(projection);
-  
-        svg.selectAll("path").data(geojson.features).enter().append("path")
-          .attr("d", path)
-          .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
-          .on("mouseover", handleMouseOver)
-          .on("mouseout", handleMouseOut);
-  
-        let park_projection = d3.geoMercator().fitSize([width, height], geojson_parks);
-        let park_path = d3.geoPath().projection(park_projection);
-      
-        svg.selectAll("path").data(geojson_parks.features).enter().append("path")
-          .attr("d", park_path)
-          .attr("fill", "#04a057")
+        displayDefaultMap(geojson);
+        displayParkMapLayer(geojson_parks);
       })
     })
   } else if (display_variation == 3) {
@@ -131,35 +98,43 @@ function displayGeoMap(display_variation) {
       d3.json(park_data, function (err, geojson_parks) {
         d3.json(bike_data, function (err, geojson_bike) {
 
-          console.log("bike + parks");
-          let projection = d3.geoMercator().fitSize([width, height], geojson);
-          let path = d3.geoPath().projection(projection);
-    
-          svg.selectAll("path").data(geojson.features).enter().append("path")
-            .attr("d", path)
-            .attr("class", "svg-style")  
-            .on("mouseover", handleMouseOver)
-            .on("mouseout", handleMouseOut);
-
-          let bike_projection = d3.geoMercator().fitSize([width, height], geojson_bike);
-          let bike_path = d3.geoPath().projection(bike_projection);
-      
-          svg.selectAll("path").data(geojson_bike.features).enter().append("path")
-            .attr("d", bike_path)
-            .attr("fill", "#ff0000")
-    
-          let park_projection = d3.geoMercator().fitSize([width, height], geojson_parks);
-          let park_path = d3.geoPath().projection(park_projection);
-        
-          svg.selectAll("path").data(geojson_parks.features).enter().append("path")
-            .attr("d", park_path)
-            .attr("fill", "#04a057")
+          displayDefaultMap(geojson);
+          displayBikeMapLayer(geojson_bike);
+          displayParkMapLayer(geojson_parks);
         })
       })
     })
-  }
+  } // end of if cases
 
 };
+
+function displayParkMapLayer(geojson_parks) {
+  let park_projection = d3.geoMercator().fitSize([width, height], geojson_parks);
+  let park_path = d3.geoPath().projection(park_projection);
+  svg.selectAll("path").data(geojson_parks.features).enter().append("path")
+    .attr("d", park_path)
+    .attr("fill", "#04a057");
+}
+
+function displayDefaultMap(geojson) {
+  let projection = d3.geoMercator().fitSize([width, height], geojson);
+  let path = d3.geoPath().projection(projection);
+  
+  svg.selectAll("path").data(geojson.features).enter().append("path")
+    .attr("d", path)
+    .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
+    .on("mouseover", handleMouseOver)
+    .on("mouseout", handleMouseOut);
+}
+
+function displayBikeMapLayer(geojson_bike) {
+  let bike_projection = d3.geoMercator().fitSize([width, height], geojson_bike);
+  let bike_path = d3.geoPath().projection(bike_projection);
+
+  svg.selectAll("path").data(geojson_bike.features).enter().append("path")
+    .attr("d", bike_path)
+    .attr("fill", "#ff0000");
+}
 
 function handleMouseOver(d, i) {
 
