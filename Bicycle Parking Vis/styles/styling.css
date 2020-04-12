@@ -18,6 +18,10 @@ header h2 {
     font-family: Helvetica;
 }
 
+#mapid { 
+    height: 180px; 
+}
+
 .svg-style {
     width: 100%;
     height: 100%;

@@ -5,8 +5,59 @@ const data = "data/city_wards_data.geojson";
 const bike_data = "data/bicycle_parking_map_data.geojson";
 const park_data = "data/city_green_space.json";
 const street_parking_data = "data/street_bicycle_parking_data.geojson";
+const school_data = "data/school_all_types_data.geojson";
 
 window.onload = function () {
+    
+  // Start view at Toronto    
+  const mymap = L.map('mapid').setView([43.6707, -79.3930], 11);
+    
+  var myIcon = L.icon({
+    iconUrl: 'icons/school_icon.png',
+    iconSize: [50, 32],
+    iconAnchor: [25, 16]
+  });
+//  const marker = L.marker([0, 0], { icon: myIcon }).addTo(mymap);
+    
+
+    
+var longStorage = [];
+var latStorage = [];
+    
+var counter = 0;
+$(document).ready(function () {    
+    $.getJSON(school_data, function (data) {
+        $.each(data.features, function (key, val) {
+            counter++;
+            $.each(val.properties, function(i,j){
+                if (i == "LATITUDE") {
+                    latStorage.push(j);
+//                    console.log(latStorage);
+                }
+                if (i == "LONGITUDE") {
+                    longStorage[counter] = j;
+//                    console.log(longStorage);
+                }
+            })
+        });
+    });
+});
+
+    console.log(longStorage);
+    
+  for (var i = 0; i < latStorage.length; i++) {
+    const marker = new L.marker(latStorage[i],longStorage[i])
+        .bindPopup(longStorage[i])
+        .addTo(mymap);
+  }
+
+  const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+    
+  const tileURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'; 
+  // Limit user zooming
+  const tiles = L.tileLayer(tileURL, { attribution, maxZoom: 14 , minZoom: 10 } );   
+  tiles.addTo(mymap);
+
   svg = d3.select("#vis").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -17,15 +68,16 @@ window.onload = function () {
     .style("opacity", 0);
 
   // default view
-  var checkbox_variation = [0, 1, 2, 3, 4];
+  var checkbox_variation = [0, 1, 2, 3, 4, 5];
   displayGeoMap(checkbox_variation[0]);
 
   // attach event listeners to these
   const checkboxBike = document.getElementById('bikeParkingCheckbox');
   const checkboxPark = document.getElementById('parksCheckbox');
   const checkboxRecs = document.getElementById('recsCheckbox');
-  const checkboxEdu = document.getElementById('eduCheckbox');
   const checkboxStreet = document.getElementById('streetParkingCheckbox');
+  const checkboxSchool = document.getElementById('schoolCheckbox');
+
 
   checkboxBike.addEventListener('change', (event) => {
     changeView(svg, checkbox_variation);
@@ -36,6 +88,10 @@ window.onload = function () {
   })
     
   checkboxStreet.addEventListener('change', (event) => {
+    changeView(svg, checkbox_variation);
+  })
+ 
+  checkboxSchool.addEventListener('change', (event) => {
     changeView(svg, checkbox_variation);
   })
 
@@ -55,19 +111,21 @@ function nextMapView() {
   const checkboxBike = document.getElementById('bikeParkingCheckbox');
   const checkboxPark = document.getElementById('parksCheckbox');
   const checkboxRecs = document.getElementById('recsCheckbox');
-  const checkboxEdu = document.getElementById('eduCheckbox');
   const checkboxStreet = document.getElementById('streetParkingCheckbox');
+  const checkboxSchool = document.getElementById('schoolCheckbox');
 
-  if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
+  if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
       return 0;
-  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
+  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
       return 1;
-  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
+  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
       return 2;
-  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
+  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
       return 3;
-  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == true) {
+  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == false) {
       return 4;
+  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == true) {
+      return 5;
   }
 }
 
@@ -113,10 +171,9 @@ function displayGeoMap(display_variation) {
         })
       })
     })
-  }
-  else if (display_variation == 4) {
+  } else if (display_variation == 4) {
 
-    // BIKE + PARKS VIEW ------------------------------------------------------------------------------------------//
+    // STREET PARKING VIEW ------------------------------------------------------------------------------------------//
     d3.json(data, function (err, geojson) {
       d3.json(street_parking_data, function (err, geojson_street) {
 
@@ -124,7 +181,17 @@ function displayGeoMap(display_variation) {
           displayStreetMapLayer(geojson_street);
         })
       })
-  } // end of if cases
+  } else if (display_variation == 5) {
+
+    // SCHOOLS VIEW ------------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(school_data, function (err, geojson_school) {
+
+          displayDefaultMap(geojson);
+          displaySchoolMapLayer(geojson_school);
+        })
+      })
+  }// end of if cases
 
 };
 
@@ -162,6 +229,14 @@ function displayStreetMapLayer(geojson_street) {
   svg.selectAll("path").data(geojson_street.features).enter().append("path")
     .attr("d", street_path)
     .attr("fill", "#eb3462");
+}
+
+function displaySchoolMapLayer(geojson_school) {
+  let school_projection = d3.geoMercator().fitSize([width, height], geojson_school);
+  let school_path = d3.geoPath().projection(school_projection);
+  svg.selectAll("path").data(geojson_school.features).enter().append("path")
+    .attr("d", school_path)
+    .attr("fill", "#34ebc6");
 }
 
 function handleMouseOver(d, i) {

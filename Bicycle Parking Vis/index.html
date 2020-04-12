@@ -4,6 +4,16 @@
   <meta charset="utf-8">
   <title>Toronto Bicycle Parking Vis</title>
   <link type="text/css" rel="stylesheet" href="styles/styling.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
   <script src="https://d3js.org/d3.v4.js"></script>
   <script src="scripts/parking.js"></script>
 </head>
@@ -12,6 +22,8 @@
   <header>
     <h2>Toronto Bicycle Parking</h2>
   </header>
+  <div id="mapid"></div>
+    
   <div id="vis">
     <div id="checkboxArea">
       <h2>Filter Options</h2>
@@ -24,16 +36,16 @@
         <input id="recsCheckbox" type="checkbox">
         <span class="checkmark"></span>
       </label>
-      <label class="container">Educational Institutions
-        <input id="eduCheckbox" type="checkbox">
-        <span class="checkmark"></span>
-      </label>
       <label class="container">Outdoor Bicycle Parking Areas
         <input id="bikeParkingCheckbox" type="checkbox">
         <span class="checkmark"></span>
       </label>
       <label class="container">Street Bicycle Parking Areas
         <input id="streetParkingCheckbox" type="checkbox">
+        <span class="checkmark"></span>
+      </label>
+      <label class="container">Schools
+        <input id="schoolCheckbox" type="checkbox">
         <span class="checkmark"></span>
       </label>
     </div>
