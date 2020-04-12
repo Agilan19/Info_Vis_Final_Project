@@ -4,6 +4,7 @@ const height = 600;
 const data = "data/city_wards_data.geojson";
 const bike_data = "data/bicycle_parking_map_data.geojson";
 const park_data = "data/city_green_space.json";
+const street_parking_data = "data/street_bicycle_parking_data.geojson";
 
 window.onload = function () {
   svg = d3.select("#vis").append("svg")
@@ -16,7 +17,7 @@ window.onload = function () {
     .style("opacity", 0);
 
   // default view
-  var checkbox_variation = [0, 1, 2, 3];
+  var checkbox_variation = [0, 1, 2, 3, 4];
   displayGeoMap(checkbox_variation[0]);
 
   // attach event listeners to these
@@ -24,12 +25,17 @@ window.onload = function () {
   const checkboxPark = document.getElementById('parksCheckbox');
   const checkboxRecs = document.getElementById('recsCheckbox');
   const checkboxEdu = document.getElementById('eduCheckbox');
+  const checkboxStreet = document.getElementById('streetParkingCheckbox');
 
   checkboxBike.addEventListener('change', (event) => {
     changeView(svg, checkbox_variation);
   })
 
   checkboxPark.addEventListener('change', (event) => {
+    changeView(svg, checkbox_variation);
+  })
+    
+  checkboxStreet.addEventListener('change', (event) => {
     changeView(svg, checkbox_variation);
   })
 
@@ -50,15 +56,18 @@ function nextMapView() {
   const checkboxPark = document.getElementById('parksCheckbox');
   const checkboxRecs = document.getElementById('recsCheckbox');
   const checkboxEdu = document.getElementById('eduCheckbox');
+  const checkboxStreet = document.getElementById('streetParkingCheckbox');
 
-  if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false){
+  if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
       return 0;
-  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxEdu.checked == false && checkboxRecs.checked == false){
+  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
       return 1;
-  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false){
+  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
       return 2;
-  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxEdu.checked == false && checkboxRecs.checked == false){
+  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false){
       return 3;
+  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxEdu.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == true) {
+      return 4;
   }
 }
 
@@ -104,6 +113,17 @@ function displayGeoMap(display_variation) {
         })
       })
     })
+  }
+  else if (display_variation == 4) {
+
+    // BIKE + PARKS VIEW ------------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(street_parking_data, function (err, geojson_street) {
+
+          displayDefaultMap(geojson);
+          displayStreetMapLayer(geojson_street);
+        })
+      })
   } // end of if cases
 
 };
@@ -134,6 +154,14 @@ function displayBikeMapLayer(geojson_bike) {
   svg.selectAll("path").data(geojson_bike.features).enter().append("path")
     .attr("d", bike_path)
     .attr("fill", "#ff0000");
+}
+
+function displayStreetMapLayer(geojson_street) {
+  let street_projection = d3.geoMercator().fitSize([width, height], geojson_street);
+  let street_path = d3.geoPath().projection(street_projection);
+  svg.selectAll("path").data(geojson_street.features).enter().append("path")
+    .attr("d", street_path)
+    .attr("fill", "#eb3462");
 }
 
 function handleMouseOver(d, i) {
