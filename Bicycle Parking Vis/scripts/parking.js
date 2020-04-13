@@ -68,7 +68,7 @@ $(document).ready(function () {
     .style("opacity", 0);
 
   // default view
-  var checkbox_variation = [0, 1, 2, 3, 4, 5];
+  var checkbox_variation = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   displayGeoMap(checkbox_variation[0]);
 
   // attach event listeners to these
@@ -173,7 +173,11 @@ function nextMapView() {
   } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == true) {
       // schools
       return 5;
+  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxStreet.checked == true && checkboxSchool.checked == false) {
+      // outdoor bikes + street bikes
+      return 6;
   }
+
 }
 
 function displayGeoMap(display_variation) {
@@ -207,7 +211,7 @@ function displayGeoMap(display_variation) {
     })
   } else if (display_variation == 3) {
 
-    // BIKE + PARKS VIEW ------------------------------------------------------------------------------------------//
+    // BIKE + PARKS VIEW --------------------------------------------------------------------------------------------//
     d3.json(data, function (err, geojson) {
       d3.json(park_data, function (err, geojson_parks) {
         d3.json(bike_data, function (err, geojson_bike) {
@@ -226,19 +230,33 @@ function displayGeoMap(display_variation) {
 
           displayDefaultMap(geojson);
           displayStreetMapLayer(geojson_street);
-        })
       })
+    })
   } else if (display_variation == 5) {
 
-    // SCHOOLS VIEW ------------------------------------------------------------------------------------------//
+    // SCHOOLS VIEW -------------------------------------------------------------------------------------------------//
     d3.json(data, function (err, geojson) {
       d3.json(school_data, function (err, geojson_school) {
 
           displayDefaultMap(geojson);
           displaySchoolMapLayer(geojson_school);
+      })
+    })
+  } else if (display_variation == 6) {
+
+    // BIKE + STREET BIKES VIEW -------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(bike_data, function (err, geojson_bike) {
+        d3.json(street_parking_data, function (err, geojson_street) {
+          
+          displayDefaultMap(geojson);
+          displayBikeMapLayer(geojson_bike);
+          displayStreetMapLayer(geojson_street);
         })
       })
-  }// end of if cases
+    })
+  }
+  // end of if cases
 
 };
 
@@ -267,7 +285,7 @@ function displayBikeMapLayer(geojson_bike) {
 
   svg.selectAll("path").data(geojson_bike.features).enter().append("path")
     .attr("d", bike_path)
-    .attr("fill", "#ff0000");
+    .attr("fill", "#4287f5");
 }
 
 function displayStreetMapLayer(geojson_street) {
