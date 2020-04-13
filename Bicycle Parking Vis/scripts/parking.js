@@ -9,17 +9,43 @@ const school_data = "data/school_all_types_data.geojson";
 
 window.onload = function () {
     
-  // Start view at Toronto    
-  const mymap = L.map('mapid').setView([43.6707, -79.3930], 11);
     
-  var myIcon = L.icon({
+L.TopoJSON = L.GeoJSON.extend({  
+  addData: function(topoData) {    
+    if (topoData.type === 'Topology') {
+      for (key in topoData.objects) {
+        geojson = topojson.feature(topoData, topoData.objects[key]);
+        L.GeoJSON.prototype.addData.call(this, geojson);
+      }
+    }    
+    else {
+      L.GeoJSON.prototype.addData.call(this, topoData);
+    }
+  }  
+});
+    
+const topoLayer = new L.TopoJSON();
+
+$.getJSON('data/city_wards_data.topojson')
+    .done(addTopoData);
+
+function addTopoData(topoData) {  
+    topoLayer.addData(topoData);
+    topoLayer.addTo(mymap);
+}
+    
+
+  // Start view at Toronto    
+const mymap = L.map('mapid').setView([43.6707, -79.3930], 12);
+    mymap.flyTo([43.7436, -79.4659], 10);
+    
+var myIcon = L.icon({
     iconUrl: 'icons/school_icon.png',
     iconSize: [50, 32],
     iconAnchor: [25, 16]
-  });
-//  const marker = L.marker([0, 0], { icon: myIcon }).addTo(mymap);
+});
+//  const marker = L.marker([43.6707, -79.3930], { icon: myIcon }).addTo(mymap);
     
-
     
 var longStorage = [];
 var latStorage = [];
@@ -29,7 +55,7 @@ $(document).ready(function () {
     $.getJSON(school_data, function (data) {
         $.each(data.features, function (key, val) {
             counter++;
-            $.each(val.properties, function(i,j){
+            $.each(val.properties, function(i,j) {
                 if (i == "LATITUDE") {
                     latStorage.push(j);
 //                    console.log(latStorage);
@@ -57,6 +83,9 @@ $(document).ready(function () {
   // Limit user zooming
   const tiles = L.tileLayer(tileURL, { attribution, maxZoom: 14 , minZoom: 10 } );   
   tiles.addTo(mymap);
+    
+    
+    
 
   svg = d3.select("#vis").append("svg")
     .attr("width", width)
