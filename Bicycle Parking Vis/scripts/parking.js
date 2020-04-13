@@ -119,7 +119,7 @@ function viewCombinations(){
       [x]        outdoor bike, schools
       [x]        parks, street bikes
       [x]        parks, schools
-      []        street bikes, schools
+      [x]        street bikes, schools
       []        outdoor bike, parks, street bikes
       []        outdoor bike, parks, schools
       []        outdoor bike,street bikes, schools
@@ -188,6 +188,9 @@ function nextMapView() {
   } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == true) {
       // street bikes + schools
       return 10;
+  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxStreet.checked == true && checkboxSchool.checked == false) {
+      // outdoor bike, parks, street bikes
+      return 11;
   }
   // end of if statements
 }
@@ -267,8 +270,8 @@ function displayGeoMap(display_variation) {
         d3.json(street_parking_data, function (err, geojson_street) {
           
           displayDefaultMap(geojson);
-          displayStreetMapLayer(geojson_street);
           displayBikeMapLayer(geojson_bike);
+          displayStreetMapLayer(geojson_street);
           displayDefaultMapTransparent(geojson);
         })
       })
@@ -329,6 +332,23 @@ function displayGeoMap(display_variation) {
         })
       })
     })
+  } else if (display_variation == 11) {
+
+    // STREET BIKES + BIKE + PARKS --------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(street_parking_data, function (err, geojson_street) {
+        d3.json(bike_data, function (err, geojson_bike) {
+          d3.json(park_data, function (err, geojson_parks) {
+          
+            displayDefaultMap(geojson);
+            displayParkMapLayer(geojson_parks);
+            displayBikeMapLayer(geojson_bike);
+            displayStreetMapLayer(geojson_street); 
+            displayDefaultMapTransparent(geojson);
+          })
+        })
+      })
+    })
   }
   // end of if cases
 
@@ -379,7 +399,8 @@ function displayStreetMapLayer(geojson_street) {
   let street_path = d3.geoPath().projection(street_projection);
   svg.selectAll("path").data(geojson_street.features).enter().append("path")
     .attr("d", street_path)
-    .attr("fill", "#eb3462");
+    .attr("fill", "#eb3462")
+    .attr("fill-opacity", "0.4");;
 }
 
 function displaySchoolMapLayer(geojson_school) {
