@@ -182,8 +182,11 @@ function nextMapView() {
   } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == false) {
       // parks + street bikes
       return 8;
+  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == true) {
+      // parks + schools
+      return 9;
   }
-
+  // end of if statements
 }
 
 function displayGeoMap(display_variation) {
@@ -284,6 +287,19 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displayParkMapLayer(geojson_parks);
           displayStreetMapLayer(geojson_street);
+        })
+      })
+    })
+  } else if (display_variation == 9) {
+
+    // PARKS + SCHOOLS --------------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(park_data, function (err, geojson_parks) {
+        d3.json(school_data, function (err, geojson_school) {
+          
+          displayDefaultMap(geojson);
+          displaySchoolMapLayer(geojson_school);
+          displayParkMapLayer(geojson_parks);
         })
       })
     })
