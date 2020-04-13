@@ -74,7 +74,6 @@ $(document).ready(function () {
   // attach event listeners to these
   const checkboxBike = document.getElementById('bikeParkingCheckbox');
   const checkboxPark = document.getElementById('parksCheckbox');
-  const checkboxRecs = document.getElementById('recsCheckbox');
   const checkboxStreet = document.getElementById('streetParkingCheckbox');
   const checkboxSchool = document.getElementById('schoolCheckbox');
 
@@ -106,25 +105,73 @@ function changeView(svg, checkbox_variation) {
   displayGeoMap(checkbox_variation[nextView]);
 }
 
+
+// helper function to determine view combinations
+function viewCombinations(){
+  /*
+  View Tested  Combinations
+      [x]        outdoor bike
+      [x]        parks
+      [x]        street bikes
+      [x]        schools
+      [x]        outdoor bike, parks
+      []        outdoor bike, street bikes
+      []        outdoor bike, schools
+      []        parks, street bikes
+      []        parks, schools
+      []        street bikes, schools
+      []        outdoor bike, parks, street bikes
+      []        outdoor bike, parks, schools
+      []        outdoor bike,street bikes, schools
+      []        parks, street bikes, schools
+      []        outdoor bike, parks, street bikes, schools
+  */
+ 
+  var list = ["outdoor bike", "parks", "street bikes", "schools"];
+  var combi = [];
+  var temp= "";
+  var combLen = Math.pow(2, list.length);
+
+  for (var i = 0; i < combLen ; i++){
+      temp= "";
+      for (var j=0;j<list.length;j++) {
+          if ((i & Math.pow(2,j))){ 
+              temp += list[j]
+          }
+      }
+      if (temp !== "") {
+          combi.push(temp);
+      }
+  }
+  console.log(combi.join("\n"));
+}
+
 // View management through checkboxes
 function nextMapView() {
   const checkboxBike = document.getElementById('bikeParkingCheckbox');
   const checkboxPark = document.getElementById('parksCheckbox');
-  const checkboxRecs = document.getElementById('recsCheckbox');
   const checkboxStreet = document.getElementById('streetParkingCheckbox');
   const checkboxSchool = document.getElementById('schoolCheckbox');
 
-  if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
+  //viewCombinations();
+
+  if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
+      // default
       return 0;
-  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
+  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxStreet.checked == false && checkboxSchool.checked == false){
+      // outdoor bike
       return 1;
-  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
+  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
+      // parks
       return 2;
-  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == false){
+  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxStreet.checked == false && checkboxSchool.checked == false){
+      // parks + outdoor bikes
       return 3;
-  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == false) {
+  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == false) {
+      // street bikes
       return 4;
-  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxRecs.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == true) {
+  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == true) {
+      // schools
       return 5;
   }
 }
