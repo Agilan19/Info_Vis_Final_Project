@@ -118,7 +118,7 @@ function viewCombinations(){
       [x]        outdoor bike, street bikes
       [x]        outdoor bike, schools
       [x]        parks, street bikes
-      []        parks, schools
+      [x]        parks, schools
       []        street bikes, schools
       []        outdoor bike, parks, street bikes
       []        outdoor bike, parks, schools
@@ -185,6 +185,9 @@ function nextMapView() {
   } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxStreet.checked == false && checkboxSchool.checked == true) {
       // parks + schools
       return 9;
+  } else if (checkboxPark.checked == false && checkboxBike.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == true) {
+      // street bikes + schools
+      return 10;
   }
   // end of if statements
 }
@@ -206,6 +209,7 @@ function displayGeoMap(display_variation) {
   
         displayDefaultMap(geojson);
         displayBikeMapLayer(geojson_bike);
+        displayDefaultMapTransparent(geojson);
       })
     })
   } else if (display_variation == 2) {
@@ -216,6 +220,7 @@ function displayGeoMap(display_variation) {
 
         displayDefaultMap(geojson);
         displayParkMapLayer(geojson_parks);
+        displayDefaultMapTransparent(geojson);
       })
     })
   } else if (display_variation == 3) {
@@ -228,6 +233,7 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displayBikeMapLayer(geojson_bike);
           displayParkMapLayer(geojson_parks);
+          displayDefaultMapTransparent(geojson);
         })
       })
     })
@@ -239,6 +245,7 @@ function displayGeoMap(display_variation) {
 
           displayDefaultMap(geojson);
           displayStreetMapLayer(geojson_street);
+          displayDefaultMapTransparent(geojson);
       })
     })
   } else if (display_variation == 5) {
@@ -249,6 +256,7 @@ function displayGeoMap(display_variation) {
 
           displayDefaultMap(geojson);
           displaySchoolMapLayer(geojson_school);
+          displayDefaultMapTransparent(geojson);
       })
     })
   } else if (display_variation == 6) {
@@ -261,6 +269,7 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displayStreetMapLayer(geojson_street);
           displayBikeMapLayer(geojson_bike);
+          displayDefaultMapTransparent(geojson);
         })
       })
     })
@@ -274,6 +283,7 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displayBikeMapLayer(geojson_bike);
           displaySchoolMapLayer(geojson_school);
+          displayDefaultMapTransparent(geojson);
         })
       })
     })
@@ -287,6 +297,7 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displayParkMapLayer(geojson_parks);
           displayStreetMapLayer(geojson_street);
+          displayDefaultMapTransparent(geojson);
         })
       })
     })
@@ -300,6 +311,21 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displaySchoolMapLayer(geojson_school);
           displayParkMapLayer(geojson_parks);
+          displayDefaultMapTransparent(geojson);
+        })
+      })
+    })
+  } else if (display_variation == 10) {
+
+    // STREET BIKES + SCHOOLS -------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(street_parking_data, function (err, geojson_street) {
+        d3.json(school_data, function (err, geojson_school) {
+          
+          displayDefaultMap(geojson);
+          displaySchoolMapLayer(geojson_school);
+          displayStreetMapLayer(geojson_street);
+          displayDefaultMapTransparent(geojson);
         })
       })
     })
@@ -323,6 +349,18 @@ function displayDefaultMap(geojson) {
   svg.selectAll("path").data(geojson.features).enter().append("path")
     .attr("d", path)
     .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
+    .on("mouseover", handleMouseOver)
+    .on("mouseout", handleMouseOut);
+}
+
+// Add this layer on top of stack to display tooltip data
+function displayDefaultMapTransparent(geojson) {
+  let projection = d3.geoMercator().fitSize([width, height], geojson);
+  let path = d3.geoPath().projection(projection);
+  
+  svg.selectAll("path").data(geojson.features).enter().append("path")
+    .attr("d", path)
+    .attr("class", "svg-style-transparent")  // calls the entire css class with styles, same as .style(...)
     .on("mouseover", handleMouseOver)
     .on("mouseout", handleMouseOut);
 }
