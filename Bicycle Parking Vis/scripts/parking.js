@@ -120,8 +120,8 @@ function viewCombinations(){
       [x]        parks, street bikes
       [x]        parks, schools
       [x]        street bikes, schools
-      []        outdoor bike, parks, street bikes
-      []        outdoor bike, parks, schools
+      [x]        outdoor bike, parks, street bikes
+      [x]        outdoor bike, parks, schools
       []        outdoor bike,street bikes, schools
       []        parks, street bikes, schools
       []        outdoor bike, parks, street bikes, schools
@@ -191,6 +191,9 @@ function nextMapView() {
   } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxStreet.checked == true && checkboxSchool.checked == false) {
       // outdoor bike, parks, street bikes
       return 11;
+  } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxStreet.checked == false && checkboxSchool.checked == true) {
+      // outdoor bike, parks, schools
+      return 12;
   }
   // end of if statements
 }
@@ -341,9 +344,26 @@ function displayGeoMap(display_variation) {
           d3.json(park_data, function (err, geojson_parks) {
           
             displayDefaultMap(geojson);
-            displayParkMapLayer(geojson_parks);
             displayBikeMapLayer(geojson_bike);
+            displayParkMapLayer(geojson_parks);
             displayStreetMapLayer(geojson_street); 
+            displayDefaultMapTransparent(geojson);
+          })
+        })
+      })
+    })
+  } else if (display_variation == 12) {
+
+    // BIKE + SCHOOLS + PARKS ------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(school_data, function (err, geojson_school) {
+        d3.json(bike_data, function (err, geojson_bike) {
+          d3.json(park_data, function (err, geojson_parks) {
+          
+            displayDefaultMap(geojson);
+            displayBikeMapLayer(geojson_bike);
+            displaySchoolMapLayer(geojson_school);
+            displayParkMapLayer(geojson_parks);
             displayDefaultMapTransparent(geojson);
           })
         })
