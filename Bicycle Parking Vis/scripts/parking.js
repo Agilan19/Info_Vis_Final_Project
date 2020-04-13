@@ -124,7 +124,7 @@ function viewCombinations(){
       [x]        outdoor bike, parks, schools
       [x]        outdoor bike,street bikes, schools
       [x]        parks, street bikes, schools
-      []        outdoor bike, parks, street bikes, schools
+      [x]        outdoor bike, parks, street bikes, schools
   */
  
   var list = ["outdoor bike", "parks", "street bikes", "schools"];
