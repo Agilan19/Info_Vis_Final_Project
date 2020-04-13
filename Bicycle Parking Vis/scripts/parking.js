@@ -189,11 +189,14 @@ function nextMapView() {
       // street bikes + schools
       return 10;
   } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxStreet.checked == true && checkboxSchool.checked == false) {
-      // outdoor bike, parks, street bikes
+      // outdoor bike + parks + street bikes
       return 11;
   } else if (checkboxPark.checked == true && checkboxBike.checked == true && checkboxStreet.checked == false && checkboxSchool.checked == true) {
-      // outdoor bike, parks, schools
+      // outdoor bike + parks + schools
       return 12;
+  } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxStreet.checked == true && checkboxSchool.checked == true) {
+      // outdoor bike + street bikes + schools
+      return 13;
   }
   // end of if statements
 }
@@ -364,6 +367,23 @@ function displayGeoMap(display_variation) {
             displayBikeMapLayer(geojson_bike);
             displaySchoolMapLayer(geojson_school);
             displayParkMapLayer(geojson_parks);
+            displayDefaultMapTransparent(geojson);
+          })
+        })
+      })
+    })
+  } else if (display_variation == 13) {
+
+    // BIKE + STREET BIKES + SCHOOLS ------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(school_data, function (err, geojson_school) {
+        d3.json(bike_data, function (err, geojson_bike) {
+          d3.json(street_parking_data, function (err, geojson_street) {
+          
+            displayDefaultMap(geojson);
+            displayBikeMapLayer(geojson_bike);
+            displaySchoolMapLayer(geojson_school);
+            displayStreetMapLayer(geojson_street); 
             displayDefaultMapTransparent(geojson);
           })
         })
