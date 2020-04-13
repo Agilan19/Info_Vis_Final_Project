@@ -117,7 +117,7 @@ function viewCombinations(){
       [x]        outdoor bike, parks
       [x]        outdoor bike, street bikes
       [x]        outdoor bike, schools
-      []        parks, street bikes
+      [x]        parks, street bikes
       []        parks, schools
       []        street bikes, schools
       []        outdoor bike, parks, street bikes
@@ -179,6 +179,9 @@ function nextMapView() {
   } else if (checkboxPark.checked == false && checkboxBike.checked == true && checkboxStreet.checked == false && checkboxSchool.checked == true) {
       // outdoor bikes + schools
       return 7;
+  } else if (checkboxPark.checked == true && checkboxBike.checked == false && checkboxStreet.checked == true && checkboxSchool.checked == false) {
+      // parks + street bikes
+      return 8;
   }
 
 }
@@ -260,7 +263,7 @@ function displayGeoMap(display_variation) {
     })
   } else if (display_variation == 7) {
 
-    // BIKE + SCHOOLS -------------------------------------------------------------------------------------//
+    // BIKE + SCHOOLS -----------------------------------------------------------------------------------------------//
     d3.json(data, function (err, geojson) {
       d3.json(bike_data, function (err, geojson_bike) {
         d3.json(school_data, function (err, geojson_school) {
@@ -268,6 +271,19 @@ function displayGeoMap(display_variation) {
           displayDefaultMap(geojson);
           displayBikeMapLayer(geojson_bike);
           displaySchoolMapLayer(geojson_school);
+        })
+      })
+    })
+  } else if (display_variation == 8) {
+
+    // PARKS + STREET BIKES ----------------------------------------------------------------------------------------//
+    d3.json(data, function (err, geojson) {
+      d3.json(park_data, function (err, geojson_parks) {
+        d3.json(street_parking_data, function (err, geojson_street) {
+          
+          displayDefaultMap(geojson);
+          displayParkMapLayer(geojson_parks);
+          displayStreetMapLayer(geojson_street);
         })
       })
     })
