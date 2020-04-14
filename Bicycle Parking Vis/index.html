@@ -23,13 +23,24 @@
   <header>
     <h2>Toronto Bicycle Parking</h2>
   </header>
+  <p>We have chosen to do a problem-driven design study, for which we wish to investigate an ongoing problem. The problem we have decided to study is that certain wards in Toronto do not have access to bicycle parking in comparison to others so we would like to do a visualization which can be presented to the City of Toronto highlighting the many wards in Toronto which lack cycling access.</p>    
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Geomap')" id="defaultOpen">Geospatial Map</button>
+    <button class="tablinks" onclick="openTab(event, 'Wardmap')">Ward Map</button>
+  </div>
+
+<div id="Geomap" class="tabcontent">
+  <h3>Explore Geospatial Version</h3>
   <div id="mapid"></div>
+</div>
     
+<div id="Wardmap" class="tabcontent">
+  <h3>Lack of Bicycle Parking near Schools and Parks by Ward</h3>
   <div id="vis">
     <div id="checkboxArea">
       <h2>Filter Options</h2>
       <label class="container">Parks
-        <!--<input id="parksCheckbox" type="checkbox" checked="checked">-->
+        <input id="parksCheckbox" type="checkbox" checked="checked">
         <input id="parksCheckbox" type="checkbox">
         <span class="checkmark"></span>
       </label>
@@ -47,5 +58,6 @@
       </label>
     </div>
   </div>
- 
+</div>
+     
 </body>

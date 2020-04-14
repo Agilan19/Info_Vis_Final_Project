@@ -7,8 +7,31 @@ const park_data = "data/city_green_space.json";
 const street_parking_data = "data/street_bicycle_parking_data.geojson";
 const school_data = "data/school_all_types_data.geojson";
 
-window.onload = function () {
+
+
+function openTab(e, tabName) {
     
+  // Get all the tabcontent and hide them
+  var tabcontent = document.getElementsByClassName("tabcontent");
+  for (var m = 0; m < tabcontent.length; m++) {
+    tabcontent[m].style.display = "none";
+  }
+
+  // Get all the tablinks and remove the class "active" to make them inactive
+  var tablinks = document.getElementsByClassName("tablinks");
+  for (var n = 0; n < tablinks.length; n++) {
+    tablinks[n].className = tablinks[n].className.replace(" active", "");
+  }
+
+  // Show the current tab, and make it "active"
+  document.getElementById(tabName).style.display = "block";
+  e.currentTarget.className += " active";
+}
+
+window.onload = function () { 
+
+// Open the default tab when the window first loads     
+document.getElementById("defaultOpen").click();
     
 L.TopoJSON = L.GeoJSON.extend({  
   addData: function(topoData) {    
@@ -32,56 +55,89 @@ $.getJSON('data/city_wards_data.topojson')
 function addTopoData(topoData) {  
     topoLayer.addData(topoData);
     topoLayer.addTo(mymap);
-}
-    
+}    
 
   // Start view at Toronto    
 const mymap = L.map('mapid').setView([43.6707, -79.3930], 12);
     mymap.flyTo([43.7436, -79.4659], 10);
     
 var myIcon = L.icon({
-    iconUrl: 'icons/school_icon.png',
-    iconSize: [50, 32],
+    iconUrl: 'images/school_icon.png',
+    iconSize: [5, 5],
     iconAnchor: [25, 16]
 });
-//  const marker = L.marker([43.6707, -79.3930], { icon: myIcon }).addTo(mymap);
     
+var myBigIcon = L.icon({
+    iconUrl: 'images/school_icon.png',
+    iconSize: [25, 25],
+    iconAnchor: [25, 16]
+});
+            
     
 var longStorage = [];
 var latStorage = [];
-    
+var schoolNames = [];
+var schoolAddress = [];
+var municipality = [];
+        
 var counter = 0;
 $(document).ready(function () {    
     $.getJSON(school_data, function (data) {
         $.each(data.features, function (key, val) {
-            counter++;
             $.each(val.properties, function(i,j) {
                 if (i == "LATITUDE") {
                     latStorage.push(j);
-//                    console.log(latStorage);
                 }
-                if (i == "LONGITUDE") {
-                    longStorage[counter] = j;
-//                    console.log(longStorage);
+                else if (i == "LONGITUDE") {
+                    // Other way to store into array    
+//                    longStorage[counter] = j;
+                    longStorage.push(j);
+                }
+                else if (i == "NAME") {
+                    schoolNames.push(j);
+                }
+                else if (i == "SOURCE_ADDRESS") {
+                    schoolAddress.push(j);
+                }
+                else if (i == "MUNICIPALITY") {
+                    municipality.push(j);
                 }
             })
+//            counter++;
         });
+        
+        for (var l = 0; l < longStorage.length; l++) {
+            
+            var marker = new L.marker([latStorage[l],longStorage[l]], { icon: myIcon })
+                .bindPopup('<h3>'+schoolNames[l]+'</h2>' + '\n' + '<h5>'+ schoolAddress[l]+'</h5>' + '<h5>'+ municipality[l]+'</h5>')
+                .addTo(mymap);
+            
+//                mymap.on('zoomend', function() {
+//                    var currentZoom = mymap.getZoom();
+//                    if (currentZoom >= 12) {
+//                        var marker = new L.marker([latStorage[l],longStorage[l]], { icon: myBigIcon })
+//                            .bindPopup('<h5>'+ longStorage[l]+'</h5>')
+//                            .addTo(mymap);
+//                    }
+//                    else {
+//                        var marker = new L.marker([latStorage[l],longStorage[l]], { icon: myIcon })
+//                            .bindPopup('<h5>'+ longStorage[l]+'</h5>')
+//                            .addTo(mymap);
+//                    }
+////                    myIcon.iconSize * 2000;
+////                    marker.setIcon(myIcon);
+//                });
+        }
     });
 });
-
-    console.log(longStorage);
     
-  for (var i = 0; i < latStorage.length; i++) {
-    const marker = new L.marker(latStorage[i],longStorage[i])
-        .bindPopup(longStorage[i])
-        .addTo(mymap);
-  }
+//  var imgOverlay = L.imageOverlay('images/mun13.png', [[43.857750, -79.758847], [43.590913, -78.962680]]).addTo(mymap);
 
   const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
     
   const tileURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'; 
   // Limit user zooming
-  const tiles = L.tileLayer(tileURL, { attribution, maxZoom: 14 , minZoom: 10 } );   
+  const tiles = L.tileLayer(tileURL, { attribution, maxZoom: 14 , minZoom: 9 } );   
   tiles.addTo(mymap);
     
     
