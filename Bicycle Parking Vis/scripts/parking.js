@@ -135,6 +135,7 @@ $(document).ready(function () {
                     // Place back the map tiles and ward layer after removing them (to remove the marker1 points)
                     tiles.addTo(mymap);
                     topoLayer.addTo(mymap);
+//                    imgOverlay.addTo(mymap);
                 }
             }
         });
