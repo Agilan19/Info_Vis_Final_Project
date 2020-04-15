@@ -116,6 +116,7 @@ div.tooltip {
     transform: scale(0.75);
     padding: 0rem 1rem 1rem 1rem;
     border-style: outset;
+    width: 25%;
     /* background-color: rgb(224, 238, 255); */
 }
 

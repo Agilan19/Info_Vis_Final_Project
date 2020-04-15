@@ -569,6 +569,7 @@ function displayBikeMapLayer(geojson_bike) {
 
   svg.selectAll("path").data(geojson_bike.features).enter().append("path")
     .attr("d", bike_path)
+    .attr("transform", "translate(-90, -210) scale(1.3, 1.3)")
     .attr("fill", "#4287f5");
 }
 
@@ -578,6 +579,7 @@ function displayStreetMapLayer(geojson_street) {
   svg.selectAll("path").data(geojson_street.features).enter().append("path")
     .attr("d", street_path)
     .attr("fill", "#eb3462")
+    .attr("transform", "translate(80, 120) scale(0.7, 0.7)")
     .attr("fill-opacity", "0.4");
 }
 
@@ -586,6 +588,7 @@ function displaySchoolMapLayer(geojson_school) {
   let school_path = d3.geoPath().projection(school_projection);
   svg.selectAll("path").data(geojson_school.features).enter().append("path")
     .attr("d", school_path)
+    .attr("transform", "translate(90, 60) scale(0.8, 0.8)")
     .attr("fill", "#34ebc6");
 }
 
