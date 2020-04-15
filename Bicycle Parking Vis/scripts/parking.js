@@ -57,23 +57,22 @@ function addTopoData(topoData) {
     topoLayer.addTo(mymap);
 }    
 
-  // Start view at Toronto    
+// Start view at Toronto    
 const mymap = L.map('mapid').setView([43.6707, -79.3930], 12);
     mymap.flyTo([43.7436, -79.4659], 10);
     
-var myIcon = L.icon({
+var smallSchoolIcon = L.icon({
     iconUrl: 'images/school_icon.png',
     iconSize: [5, 5],
-    iconAnchor: [25, 16]
+    iconAnchor: [5, 5]
 });
     
-var myBigIcon = L.icon({
+var bigSchoolIcon = L.icon({
     iconUrl: 'images/school_icon.png',
     iconSize: [25, 25],
-    iconAnchor: [25, 16]
+    iconAnchor: [25, 25]
 });
             
-    
 var longStorage = [];
 var latStorage = [];
 var schoolNames = [];
@@ -106,28 +105,39 @@ $(document).ready(function () {
 //            counter++;
         });
         
-        for (var l = 0; l < longStorage.length; l++) {
-            
-            var marker = new L.marker([latStorage[l],longStorage[l]], { icon: myIcon })
-                .bindPopup('<h3>'+schoolNames[l]+'</h2>' + '\n' + '<h5>'+ schoolAddress[l]+'</h5>' + '<h5>'+ municipality[l]+'</h5>')
-                .addTo(mymap);
-            
-//                mymap.on('zoomend', function() {
-//                    var currentZoom = mymap.getZoom();
-//                    if (currentZoom >= 12) {
-//                        var marker = new L.marker([latStorage[l],longStorage[l]], { icon: myBigIcon })
-//                            .bindPopup('<h5>'+ longStorage[l]+'</h5>')
-//                            .addTo(mymap);
-//                    }
-//                    else {
-//                        var marker = new L.marker([latStorage[l],longStorage[l]], { icon: myIcon })
-//                            .bindPopup('<h5>'+ longStorage[l]+'</h5>')
-//                            .addTo(mymap);
-//                    }
-////                    myIcon.iconSize * 2000;
-////                    marker.setIcon(myIcon);
-//                });
-        }
+        var marker;
+        var marker1;     
+        
+        // Triggers whenever map zooms in/out
+        mymap.on('zoomend', function() {
+            // Collect zoom level value
+            var currentZoom = mymap.getZoom();
+                    
+            if (currentZoom >= 13) {
+                for (var m = 0; m < longStorage.length; m++) {
+                    // Re-initialize markers for the big icons
+                    marker1 = new L.marker([latStorage[m],longStorage[m]], { icon: bigSchoolIcon })
+                        .bindPopup('<h3>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
+                        .addTo(mymap);
+                }
+            }
+            else {
+                // Remove layers (specifically the marker1 points)
+                mymap.eachLayer(function (layer) {
+                    mymap.removeLayer(layer);
+                });
+                        
+                for (var m = 0; m < longStorage.length; m++) {
+                    // Re-initialize markers for the small icons
+                    marker = new L.marker([latStorage[m],longStorage[m]], { icon: smallSchoolIcon })
+                        .bindPopup('<h3>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
+                        .addTo(mymap);
+                    // Place back the map tiles and ward layer after removing them (to remove the marker1 points)
+                    tiles.addTo(mymap);
+                    topoLayer.addTo(mymap);
+                }
+            }
+        });
     });
 });
     
@@ -568,7 +578,7 @@ function displayStreetMapLayer(geojson_street) {
   svg.selectAll("path").data(geojson_street.features).enter().append("path")
     .attr("d", street_path)
     .attr("fill", "#eb3462")
-    .attr("fill-opacity", "0.4");;
+    .attr("fill-opacity", "0.4");
 }
 
 function displaySchoolMapLayer(geojson_school) {
