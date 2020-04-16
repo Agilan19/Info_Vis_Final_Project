@@ -9,6 +9,15 @@ const school_data = "data/school_all_types_data.geojson";
 
 
 
+var coloursWard = ["#402D54", "#D18975", "#8FD175", "#42c2f5", "#4281f5", "#c242f5", "#f542b0", "#f54278", "#42daf5", "#42f5b0", "#42f55a", "#b0f542", "#f5f542", "#f5c842", "#f58142", "#f55142", "#72f542", "#42f5b3", "#f542e0", "#f54299", "#f54242", "#1a691a", "#22828c", "#8c227a"];
+
+var newData = [];    
+for (var i = 0; i < coloursWard.length; i++) {
+  newData.push({
+        key: i
+  });
+}
+
 function openTab(e, tabName) {
     
   // Get all the tabcontent and hide them
@@ -72,7 +81,59 @@ var bigSchoolIcon = L.icon({
     iconSize: [25, 25],
     iconAnchor: [25, 25]
 });
-            
+    
+var smallParksIcon = L.icon({
+    iconUrl: 'images/park-icon.png',
+    iconSize: [5, 5],
+    iconAnchor: [5, 5]
+});
+    
+var bigParksIcon = L.icon({
+    iconUrl: 'images/park-icon.png',
+    iconSize: [25, 25],
+    iconAnchor: [25, 25]
+});
+    
+var smallOutdoorIcon = L.icon({
+    iconUrl: 'images/outdoor-bike-icon.png',
+    iconSize: [5, 5],
+    iconAnchor: [5, 5]
+});
+    
+var bigOutdoorIcon = L.icon({
+    iconUrl: 'images/outdoor-bike-icon.png',
+    iconSize: [25, 25],
+    iconAnchor: [25, 25]
+});
+    
+var smallStreetIcon = L.icon({
+    iconUrl: 'images/street-icon.png',
+    iconSize: [5, 5],
+    iconAnchor: [5, 5]
+});
+    
+var bigStreetIcon = L.icon({
+    iconUrl: 'images/street-icon.png',
+    iconSize: [25, 25],
+    iconAnchor: [25, 25]
+});    
+    
+// Variables to hold outdoor bicycle dataset 
+var outdoorlongStorage = [];
+var outdoorlatStorage = [];
+var outdoorIDStorage = [];
+var outdoorwardStorage = [];
+var outdoorassetStorage = [];
+    
+// Variables to hold street bicycle dataset 
+var streetlongStorage = [];
+var streetlatStorage = [];
+var streetIDStorage = [];
+var wardStorage = [];
+var assetStorage = [];
+var statusStorage = [];
+
+// Variables to hold school dataset           
 var longStorage = [];
 var latStorage = [];
 var schoolNames = [];
@@ -80,67 +141,247 @@ var schoolAddress = [];
 var municipality = [];
         
 var counter = 0;
-$(document).ready(function () {    
-    $.getJSON(school_data, function (data) {
-        $.each(data.features, function (key, val) {
-            $.each(val.properties, function(i,j) {
-                if (i == "LATITUDE") {
-                    latStorage.push(j);
-                }
-                else if (i == "LONGITUDE") {
-                    // Other way to store into array    
-//                    longStorage[counter] = j;
-                    longStorage.push(j);
-                }
-                else if (i == "NAME") {
-                    schoolNames.push(j);
-                }
-                else if (i == "SOURCE_ADDRESS") {
-                    schoolAddress.push(j);
-                }
-                else if (i == "MUNICIPALITY") {
-                    municipality.push(j);
-                }
-            })
-//            counter++;
-        });
-        
-        var marker;
-        var marker1;     
-        
-        // Triggers whenever map zooms in/out
-        mymap.on('zoomend', function() {
-            // Collect zoom level value
-            var currentZoom = mymap.getZoom();
-                    
-            if (currentZoom >= 13) {
-                for (var m = 0; m < longStorage.length; m++) {
-                    // Re-initialize markers for the big icons
-                    marker1 = new L.marker([latStorage[m],longStorage[m]], { icon: bigSchoolIcon })
-                        .bindPopup('<h3>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
-                        .addTo(mymap);
-                }
-            }
-            else {
-                // Remove layers (specifically the marker1 points)
-                mymap.eachLayer(function (layer) {
-                    mymap.removeLayer(layer);
+$(document).ready(function () {
+    // If checkbox is checked 
+    $('input[id="fltOutdoor"]').click(function() {
+        if ($(this).prop("checked") == true) {
+            $.getJSON(bike_data, function (data) {
+                $.each(data.features, function (key, val) {
+                    $.each(val.properties, function(i,j) {
+                        if (i == "LATITUDE") {
+                            outdoorlatStorage.push(j);
+                        }
+                        else if (i == "LONGITUDE") {
+                            // Other way to store into array    
+        //                    longStorage[counter] = j;
+                            outdoorlongStorage.push(j);
+                        }
+                        else if (i == "_id") {
+                            outdoorIDStorage.push(j);
+                        }
+                        else if (i == "WARD") {
+                            outdoorwardStorage.push(j);
+                        }
+                        else if (i == "PARKING_TYPE") {
+                            outdoorassetStorage.push(j);
+                        }
+                    })
+        //            counter++;
                 });
-                        
-                for (var m = 0; m < longStorage.length; m++) {
-                    // Re-initialize markers for the small icons
-                    marker = new L.marker([latStorage[m],longStorage[m]], { icon: smallSchoolIcon })
-                        .bindPopup('<h3>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
-                        .addTo(mymap);
-                    // Place back the map tiles and ward layer after removing them (to remove the marker1 points)
-                    tiles.addTo(mymap);
-                    topoLayer.addTo(mymap);
-//                    imgOverlay.addTo(mymap);
+
+                var marker;
+                var marker1;     
+
+                for (var m = 0; m < outdoorlongStorage.length; m++) {
+                    marker = new L.marker([outdoorlatStorage[m],outdoorlongStorage[m]], { icon: smallOutdoorIcon })
+                                    .bindPopup('<h2>'+outdoorIDStorage[m]+'</h2>' + '\n' + '<h5>Ward: '+ outdoorwardStorage[m]+'</h5>' + '<h5>Asset Type: '+ outdoorassetStorage[m]+'</h5>')
+                                    .addTo(mymap);
                 }
-            }
-        });
+                
+                // Triggers whenever map zooms in/out
+                mymap.on('zoomend', function() {
+                    // Collect zoom level value
+                    var currentZoom = mymap.getZoom();
+
+                    if (currentZoom >= 13) {
+                        for (var m = 0; m < outdoorlongStorage.length; m++) {
+                            // Re-initialize markers for the big icons
+                            marker1 = new L.marker([outdoorlatStorage[m],outdoorlongStorage[m]], { icon: bigOutdoorIcon })
+                                    .bindPopup('<h2>'+outdoorIDStorage[m]+'</h2>' + '\n' + '<h5>Ward: '+ outdoorwardStorage[m]+'</h5>' + '<h5>Asset Type: '+ outdoorassetStorage[m]+'</h5>')
+                                    .addTo(mymap);
+                        }
+                    }
+                    else {
+                        // Remove layers (specifically the marker1 points)
+                        mymap.eachLayer(function (layer) {
+                            mymap.removeLayer(layer);
+                        });
+
+                        for (var m = 0; m < outdoorlongStorage.length; m++) {
+                            // Re-initialize markers for the small icons
+                            marker = new L.marker([outdoorlatStorage[m],outdoorlongStorage[m]], { icon: smallOutdoorIcon })
+                                    .bindPopup('<h2>'+outdoorIDStorage[m]+'</h2>' + '\n' + '<h5>Ward: '+ outdoorwardStorage[m]+'</h5>' + '<h5>Asset Type: '+ outdoorassetStorage[m]+'</h5>')
+                                    .addTo(mymap);
+                            // Place back the map tiles and ward layer after removing them (to remove the marker1 points)
+                            tiles.addTo(mymap);
+                            topoLayer.addTo(mymap);
+                        }
+                    }
+                });
+            });
+        }
+        else if ($(this).prop("checked") == false) {
+            // Remove layers
+            mymap.eachLayer(function (layer) {
+                mymap.removeLayer(layer);
+            });
+            // Add back tiles (geospatial map) and topo layer (wards outline) 
+            tiles.addTo(mymap);
+            topoLayer.addTo(mymap);
+            $('input:checkbox').prop('checked', false);
+        }
+    });
+    $('input[id="fltStreet"]').click(function() {
+        if ($(this).prop("checked") == true) {
+            $.getJSON(street_parking_data, function (data) {
+                $.each(data.features, function (key, val) {
+                    $.each(val.properties, function(i,j) {
+                        if (i == "LATITUDE") {
+                            streetlatStorage.push(j);
+                        }
+                        else if (i == "LONGITUDE") {
+                            // Other way to store into array    
+        //                    longStorage[counter] = j;
+                            streetlongStorage.push(j);
+                        }
+                        else if (i == "ID") {
+                            streetIDStorage.push(j);
+                        }
+                        else if (i == "WARD") {
+                            wardStorage.push(j);
+                        }
+                        else if (i == "ASSETTYPE") {
+                            assetStorage.push(j);
+                        }
+                        else if (i == "STATUS") {
+                            statusStorage.push(j);
+                        }
+                    })
+        //            counter++;
+                });
+
+                var marker;
+                var marker1;     
+
+                for (var m = 0; m < longStorage.length; m++) {
+                    marker = new L.marker([streetlatStorage[m],streetlongStorage[m]], { icon: smallStreetIcon })
+                                    .bindPopup('<h2>'+streetIDStorage[m]+'</h2>' + '\n' + '<h5>Ward: '+ wardStorage[m]+'</h5>' + '<h5>Asset Type: '+ assetStorage[m]+'</h5>' + '<h5>Status: '+ statusStorage[m]+'</h5>')
+                                    .addTo(mymap);
+                }
+                
+                // Triggers whenever map zooms in/out
+                mymap.on('zoomend', function() {
+                    // Collect zoom level value
+                    var currentZoom = mymap.getZoom();
+
+                    if (currentZoom >= 13) {
+                        for (var m = 0; m < streetlongStorage.length; m++) {
+                            // Re-initialize markers for the big icons
+                            marker1 = new L.marker([streetlatStorage[m],streetlongStorage[m]], { icon: bigStreetIcon })
+                                    .bindPopup('<h2>'+streetIDStorage[m]+'</h2>' + '\n' + '<h5>Ward: '+ wardStorage[m]+'</h5>' + '<h5>Asset Type: '+ assetStorage[m]+'</h5>' + '<h5>Status: '+ statusStorage[m]+'</h5>')
+                                    .addTo(mymap);
+                        }
+                    }
+                    else {
+                        // Remove layers (specifically the marker1 points)
+                        mymap.eachLayer(function (layer) {
+                            mymap.removeLayer(layer);
+                        });
+
+                        for (var m = 0; m < streetlongStorage.length; m++) {
+                            // Re-initialize markers for the small icons
+                            marker = new L.marker([streetlatStorage[m],streetlongStorage[m]], { icon: smallStreetIcon })
+                                    .bindPopup('<h2>'+streetIDStorage[m]+'</h2>' + '\n' + '<h5>Ward: '+ wardStorage[m]+'</h5>' + '<h5>Asset Type: '+ assetStorage[m]+'</h5>' + '<h5>Status: '+ statusStorage[m]+'</h5>')
+                                    .addTo(mymap);
+                            // Place back the map tiles and ward layer after removing them (to remove the marker1 points)
+                            tiles.addTo(mymap);
+                            topoLayer.addTo(mymap);
+                        }
+                    }
+                });
+            });
+        }
+        else if ($(this).prop("checked") == false) {
+            // Remove layers
+            mymap.eachLayer(function (layer) {
+                mymap.removeLayer(layer);
+            });
+            // Add back tiles (geospatial map) and topo layer (wards outline) 
+            tiles.addTo(mymap);
+            topoLayer.addTo(mymap);
+            $('input:checkbox').prop('checked', false);
+        }
+    });
+    $('input[id="fltSchools"]').click(function() {
+        if ($(this).prop("checked") == true) {
+            $.getJSON(school_data, function (data) {
+                $.each(data.features, function (key, val) {
+                    $.each(val.properties, function(i,j) {
+                        if (i == "LATITUDE") {
+                            latStorage.push(j);
+                        }
+                        else if (i == "LONGITUDE") {
+                            // Other way to store into array    
+        //                    longStorage[counter] = j;
+                            longStorage.push(j);
+                        }
+                        else if (i == "NAME") {
+                            schoolNames.push(j);
+                        }
+                        else if (i == "SOURCE_ADDRESS") {
+                            schoolAddress.push(j);
+                        }
+                        else if (i == "MUNICIPALITY") {
+                            municipality.push(j);
+                        }
+                    })
+        //            counter++;
+                });
+
+                var marker;
+                var marker1;     
+
+                for (var m = 0; m < longStorage.length; m++) {
+                    marker = new L.marker([latStorage[m],longStorage[m]], { icon: smallSchoolIcon })
+                                    .bindPopup('<h2>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
+                                    .addTo(mymap);
+                }
+                
+                // Triggers whenever map zooms in/out
+                mymap.on('zoomend', function() {
+                    // Collect zoom level value
+                    var currentZoom = mymap.getZoom();
+
+                    if (currentZoom >= 13) {
+                        for (var m = 0; m < longStorage.length; m++) {
+                            // Re-initialize markers for the big icons
+                            marker1 = new L.marker([latStorage[m],longStorage[m]], { icon: bigSchoolIcon })
+                                .bindPopup('<h2>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
+                                .addTo(mymap);
+                        }
+                    }
+                    else {
+                        // Remove layers (specifically the marker1 points)
+                        mymap.eachLayer(function (layer) {
+                            mymap.removeLayer(layer);
+                        });
+
+                        for (var m = 0; m < longStorage.length; m++) {
+                            // Re-initialize markers for the small icons
+                            marker = new L.marker([latStorage[m],longStorage[m]], { icon: smallSchoolIcon })
+                                .bindPopup('<h2>'+schoolNames[m]+'</h2>' + '\n' + '<h5>'+ schoolAddress[m]+'</h5>' + '<h5>'+ municipality[m]+'</h5>')
+                                .addTo(mymap);
+                            // Place back the map tiles and ward layer after removing them (to remove the marker1 points)
+                            tiles.addTo(mymap);
+                            topoLayer.addTo(mymap);
+                        }
+                    }
+                });
+            });
+        }
+        else if ($(this).prop("checked") == false) {
+            // Remove layers
+            mymap.eachLayer(function (layer) {
+                mymap.removeLayer(layer);
+            });
+            // Add back tiles (geospatial map) and topo layer (wards outline) 
+            tiles.addTo(mymap);
+            topoLayer.addTo(mymap);
+            $('input:checkbox').prop('checked', false);
+        }
     });
 });
+
     
 //  var imgOverlay = L.imageOverlay('images/mun13.png', [[43.857750, -79.758847], [43.590913, -78.962680]]).addTo(mymap);
 
@@ -152,11 +393,13 @@ $(document).ready(function () {
   tiles.addTo(mymap);
     
     
-    
+  var color = d3.scaleOrdinal()
+    .domain(["Etobicoke North", "Etobicoke Centre", "Etobicoke-Lakeshore", "Parkdale-High Park", "York South-Weston", "York Centre", "Humber River-Black Creek", "Eglinton-Lawrence", "Davenport", "Spadina-Fort York", "University-Rosedale", "Toronto-St. Paul’s", "Toronto Centre", "Toronto-Danforth", "Don Valley West", "Don Valley East", "Don Valley North", "Willowdale", "Beaches-East York", "Scarborough Southwest", "Scarborough Centre", "Scarborough-Agincourt", "Scarborough North", "Scarborough-Guildwood", "Scarborough-Rouge Park" ])
+    .range([ "#402D54", "#D18975", "#8FD175", "#42c2f5", "#4281f5", "#c242f5", "#f542b0", "#f54278", "#42daf5", "#42f5b0", "#42f55a", "#b0f542", "#f5f542", "#f5c842", "#f58142", "#f55142", "#72f542", "#42f5b3", "#f542e0", "#f54299", "#f54242", "#1a691a", "#22828c", "#8c227a"]);
 
   svg = d3.select("#vis").append("svg")
     .attr("width", width)
-    .attr("height", height)
+    .attr("height", height);
 
   // Define the div for the tooltip
   div = d3.select("body").append("div")
@@ -548,6 +791,7 @@ function displayDefaultMap(geojson) {
   svg.selectAll("path").data(geojson.features).enter().append("path")
     .attr("d", path)
     .attr("class", "svg-style")  // calls the entire css class with styles, same as .style(...)
+//    .attr('fill', (data) => coloursWard[data.key])
     .on("mouseover", handleMouseOver)
     .on("mouseout", handleMouseOut);
 }
